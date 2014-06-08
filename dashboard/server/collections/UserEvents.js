@@ -16,6 +16,21 @@ Analytics.getActivationFunnel = function (from, to, sendUsers) {
   var userIds = {};
   var timeFrame = {$gte: from, $lt: to};
 
+  var filter = {from: 1, to: 1, counts: 1, type: 1};
+  if(sendUsers) {
+    filter.userIds = 1;
+  }
+  var cachedFunnel = FunnelsCache.findOne({
+    type: "activation",
+    from: from,
+    to: to
+  }, filter);
+
+  if(cachedFunnel) {
+    console.log('funnel available on the cache: ', timeFrame);
+    return cachedFunnel;
+  }
+
   var collection = mongo.collection('userEvents');
   var aggregate = Meteor._wrapAsync(collection.aggregate.bind(collection));
 
@@ -60,7 +75,7 @@ Analytics.getActivationFunnel = function (from, to, sendUsers) {
   return deliverFunnel();
 
   function deliverFunnel() {
-    var funnel = {from: from, to: to, counts: {}};
+    var funnel = {from: from, to: to, counts: {}, type: 'activation'};
     _.each(userIds, function(users, type) {
       funnel.counts[type] = users.length;
     });
@@ -68,6 +83,12 @@ Analytics.getActivationFunnel = function (from, to, sendUsers) {
     if(sendUsers) {
       funnel.userIds = userIds;
     }
+
+    // cache the funnel if possible
+    if(from.getTime() < Date.now() - 1000 * 3600 * 24) {
+      FunnelsCache.insert(funnel);
+    }
+
     return funnel;
   }
 }
