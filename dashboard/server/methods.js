@@ -24,7 +24,7 @@ function buildTimeFrames(from, to, range) {
   while(true) {
     var _from = lastTo;
     var _to = lastTo + range;
-    console.log(_from, _to);
+    
     if(_to <= to) {
       frames.push({
         from: new Date(_from),
