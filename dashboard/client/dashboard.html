@@ -14,8 +14,23 @@
       </div>
     </form>
 
-    <pre class="medium-7 medium-offset-1 columns panel result">
+    <div class="medium-7 medium-offset-1 columns panel activationFunnels">
+      <h3>Activation Funnels</h3>
+      {{#each activationFunnels}}
+        <div class="funnel">
+          <div class='timeshow'>
+            {{prettyDate from}}  --- {{prettyDate to}}
+          </div>
+          <div class="counts">
+            <ul>
+              <li>Registered: {{counts.registered}} ({{pct counts.registered counts.registered}}%)</li>
+              <li>App Created: {{counts.appCreated}} ({{pct counts.appCreated counts.registered}}%)</li>
+              <li>Data Sent: {{counts.dataSent}} ({{pct counts.dataSent counts.registered}}%)</li>
+            </ul>
+          </div>
+        </div>
 
-    </pre>
+      {{/each}}
+    </div>
   </div>
 </template>
